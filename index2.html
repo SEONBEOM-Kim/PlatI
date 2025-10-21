@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planti - 식물과의 대화 기획서</title>
+    <meta name="description" content="식물과 직접 채팅하는 혁신적인 경험을 보여주는 Planti 기획서">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* 채팅 인터페이스 스타일 */
+        .chat-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+        .chat-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .chat-title {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .chat-subtitle {
+            font-size: 1.2rem;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+        }
+
+        .chat-demo {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 60px;
+        }
+
+        .plant-avatar {
+            text-align: center;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .plant-character {
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(45deg, #4CAF50, #8BC34A);
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: white;
+            animation: pulse 2s infinite;
+        }
+
+        .plant-character::before {
+            content: '';
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: #2E7D32;
+            border-radius: 50%;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .plant-character::after {
+            content: '';
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: #1B5E20;
+            border-radius: 50%;
+            bottom: -5px;
+            right: 20px;
+        }
+
+        .plant-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .plant-status {
+            color: #27ae60;
+            font-size: 1rem;
+        }
+
+        .chat-interface {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            height: 500px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            max-height: 350px;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .message.plant {
+            justify-content: flex-start;
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message-bubble {
+            max-width: 70%;
+            padding: 12px 18px;
+            border-radius: 20px;
+            position: relative;
+            animation: messageSlide 0.3s ease;
+        }
+
+        .message.plant .message-bubble {
+            background: #e8f5e8;
+            color: #2c3e50;
+            border-bottom-left-radius: 5px;
+        }
+
+        .message.user .message-bubble {
+            background: #007bff;
+            color: white;
+            border-bottom-right-radius: 5px;
+        }
+
+        .message-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin: 0 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+        }
+
+        .message.plant .message-avatar {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .message.user .message-avatar {
+            background: #6c757d;
+            color: white;
+        }
+
+        .chat-input {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 12px 18px;
+            border: 2px solid #e9ecef;
+            border-radius: 25px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .chat-input input:focus {
+            border-color: #007bff;
+        }
+
+        .chat-input button {
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .chat-input button:hover {
+            background: #0056b3;
+        }
+
+        .scenario-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .scenario-btn {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .scenario-btn:hover {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+
+        .scenario-btn.active {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+
+        .typing-indicator {
+            display: none;
+            align-items: center;
+            gap: 5px;
+            color: #6c757d;
+            font-style: italic;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 3px;
+        }
+
+        .typing-dot {
+            width: 6px;
+            height: 6px;
+            background: #6c757d;
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 60px;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            color: #4CAF50;
+            margin-bottom: 20px;
+        }
+
+        .feature-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .feature-description {
+            color: #7f8c8d;
+            line-height: 1.6;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes messageSlide {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-10px); }
+        }
+
+        @media (max-width: 768px) {
+            .chat-demo {
+                grid-template-columns: 1fr;
+            }
+            
+            .chat-title {
+                font-size: 2rem;
+            }
+            
+            .plant-character {
+                width: 150px;
+                height: 150px;
+                font-size: 3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <!-- 헤더 -->
+        <div class="chat-header">
+            <h1 class="chat-title">🌱 식물과의 대화</h1>
+            <p class="chat-subtitle">Planti가 만들어내는 혁신적인 식물 관리 경험</p>
+        </div>
+
+        <!-- 채팅 데모 -->
+        <div class="chat-demo">
+            <!-- 식물 캐릭터 -->
+            <div class="plant-avatar">
+                <div class="plant-character">
+                    🌿
+                </div>
+                <h3 class="plant-name">몬스테라</h3>
+                <p class="plant-status">💚 건강함 | 온도: 22°C | 습도: 65%</p>
+            </div>
+
+            <!-- 채팅 인터페이스 -->
+            <div class="chat-interface">
+                <div class="scenario-buttons">
+                    <button class="scenario-btn active" onclick="loadScenario('greeting')">인사하기</button>
+                    <button class="scenario-btn" onclick="loadScenario('health')">건강 상태</button>
+                    <button class="scenario-btn" onclick="loadScenario('care')">관리 팁</button>
+                    <button class="scenario-btn" onclick="loadScenario('problem')">문제 해결</button>
+                </div>
+
+                <div class="chat-messages" id="chatMessages">
+                    <div class="message plant">
+                        <div class="message-avatar">🌱</div>
+                        <div class="message-bubble">
+                            안녕하세요! 저는 몬스테라예요. 오늘 컨디션이 정말 좋아요! ☀️
+                        </div>
+                    </div>
+                    <div class="message user">
+                        <div class="message-bubble">
+                            안녕! 오늘 기분이 어때?
+                        </div>
+                        <div class="message-avatar">👤</div>
+                    </div>
+                    <div class="message plant">
+                        <div class="message-avatar">🌱</div>
+                        <div class="message-bubble">
+                            정말 좋아요! 햇빛을 충분히 받고 있어서 잎이 더 커지고 있어요. 하지만 물이 조금 부족한 것 같아요 💧
+                        </div>
+                    </div>
+                </div>
+
+                <div class="typing-indicator" id="typingIndicator">
+                    <span>몬스테라가 입력 중</span>
+                    <div class="typing-dots">
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                    </div>
+                </div>
+
+                <div class="chat-input">
+                    <input type="text" id="messageInput" placeholder="식물에게 메시지를 보내세요..." onkeypress="handleKeyPress(event)">
+                    <button onclick="sendMessage()">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 핵심 기능 소개 -->
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">💬</div>
+                <h3 class="feature-title">자연스러운 대화</h3>
+                <p class="feature-description">
+                    복잡한 센서 데이터를 자연스러운 언어로 변환하여 
+                    식물의 상태를 친근하게 전달합니다.
+                </p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🧠</div>
+                <h3 class="feature-title">AI 페르소나</h3>
+                <p class="feature-description">
+                    각 식물마다 고유한 성격과 말투를 가진 AI 캐릭터가 
+                    개인화된 경험을 제공합니다.
+                </p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3 class="feature-title">실시간 반응</h3>
+                <p class="feature-description">
+                    온디바이스 LLM으로 인터넷 없이도 즉각적인 
+                    응답과 조언을 받을 수 있습니다.
+                </p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3 class="feature-title">스마트 분석</h3>
+                <p class="feature-description">
+                    6가지 센서 데이터를 종합 분석하여 
+                    정확한 식물 상태를 파악합니다.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 채팅 시나리오 데이터
+        const scenarios = {
+            greeting: [
+                { type: 'plant', message: '안녕하세요! 저는 몬스테라예요 🌿' },
+                { type: 'plant', message: '오늘 컨디션이 정말 좋아요! 햇빛을 충분히 받고 있어서 기분이 최고예요 ☀️' }
+            ],
+            health: [
+                { type: 'plant', message: '제 건강 상태를 말씀드릴게요!' },
+                { type: 'plant', message: '온도: 22°C (완벽해요!) 🌡️' },
+                { type: 'plant', message: '습도: 65% (적당해요) 💧' },
+                { type: 'plant', message: '빛: 충분해요 ☀️' },
+                { type: 'plant', message: '토양 pH: 6.2 (좋아요!) 🌱' },
+                { type: 'plant', message: '전반적으로 매우 건강한 상태예요!' }
+            ],
+            care: [
+                { type: 'plant', message: '관리 팁을 알려드릴게요!' },
+                { type: 'plant', message: '물은 일주일에 2-3번 정도 주시면 돼요 💧' },
+                { type: 'plant', message: '햇빛은 간접광이 좋아요. 직사광선은 피해주세요 ☀️' },
+                { type: 'plant', message: '잎에 먼지가 쌓이면 젖은 천으로 닦아주세요 🧽' },
+                { type: 'plant', message: '이렇게 해주시면 더 건강하게 자랄 수 있어요!' }
+            ],
+            problem: [
+                { type: 'plant', message: '아, 문제가 있나요? 😟' },
+                { type: 'plant', message: '잎이 노랗게 변하고 있나요? 그렇다면 물을 너무 많이 주신 것 같아요 💧' },
+                { type: 'plant', message: '잎 끝이 갈색이 되고 있나요? 공기 습도가 부족할 수 있어요 🌫️' },
+                { type: 'plant', message: '잎이 작아지고 있나요? 영양분이 부족할 수 있어요 🌿' },
+                { type: 'plant', message: '정확한 진단을 위해 센서 데이터를 확인해볼게요!' }
+            ]
+        };
+
+        // 시나리오 로드
+        function loadScenario(scenarioType) {
+            // 버튼 상태 업데이트
+            document.querySelectorAll('.scenario-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // 채팅 메시지 초기화
+            const chatMessages = document.getElementById('chatMessages');
+            chatMessages.innerHTML = '';
+
+            // 타이핑 인디케이터 표시
+            showTypingIndicator();
+
+            // 시나리오 메시지 순차적으로 표시
+            setTimeout(() => {
+                hideTypingIndicator();
+                const messages = scenarios[scenarioType];
+                messages.forEach((msg, index) => {
+                    setTimeout(() => {
+                        addMessage(msg.type, msg.message);
+                    }, index * 1000);
+                });
+            }, 1500);
+        }
+
+        // 메시지 추가
+        function addMessage(type, message) {
+            const chatMessages = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+
+            const avatar = type === 'plant' ? '🌱' : '👤';
+            messageDiv.innerHTML = `
+                <div class="message-avatar">${avatar}</div>
+                <div class="message-bubble">${message}</div>
+            `;
+
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // 타이핑 인디케이터 표시
+        function showTypingIndicator() {
+            document.getElementById('typingIndicator').style.display = 'flex';
+        }
+
+        // 타이핑 인디케이터 숨기기
+        function hideTypingIndicator() {
+            document.getElementById('typingIndicator').style.display = 'none';
+        }
+
+        // 메시지 전송
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (message) {
+                addMessage('user', message);
+                input.value = '';
+
+                // 식물 응답 시뮬레이션
+                setTimeout(() => {
+                    showTypingIndicator();
+                    setTimeout(() => {
+                        hideTypingIndicator();
+                        const responses = [
+                            '정말 흥미로운 말이에요! 🌱',
+                            '그렇게 생각하시는군요! 저도 비슷해요 🌿',
+                            '좋은 질문이에요! 센서로 확인해볼게요 📊',
+                            '와, 정말 신기해요! 더 알고 싶어요 🤔',
+                            '그렇군요! 저도 그렇게 느껴요 😊'
+                        ];
+                        const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                        addMessage('plant', randomResponse);
+                    }, 2000);
+                }, 500);
+            }
+        }
+
+        // 엔터키 처리
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        // 페이지 로드 시 초기 시나리오 실행
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                loadScenario('greeting');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
