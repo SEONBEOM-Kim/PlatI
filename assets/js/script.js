@@ -173,14 +173,11 @@ window.addEventListener('click', function(event) {
 function handleWaitlistSubmission(e) {
     e.preventDefault();
     
-    const formData = new FormData(e.target);
     const email = document.getElementById('email').value;
-    const name = document.getElementById('name').value;
-    const interest = document.getElementById('interest').value;
     
     // 간단한 유효성 검사
-    if (!email || !name || !interest) {
-        showNotification('모든 필드를 입력해주세요.', 'error');
+    if (!email) {
+        showNotification('이메일 주소를 입력해주세요.', 'error');
         return;
     }
     
@@ -193,13 +190,18 @@ function handleWaitlistSubmission(e) {
     // 여기서는 로컬 스토리지에 저장
     const waitlistData = {
         email: email,
-        name: name,
-        interest: interest,
         timestamp: new Date().toISOString()
     };
     
     // 기존 대기자 목록 가져오기
     let waitlist = JSON.parse(localStorage.getItem('plantiWaitlist') || '[]');
+    
+    // 중복 이메일 체크
+    if (waitlist.some(entry => entry.email === email)) {
+        showNotification('이미 등록된 이메일입니다.', 'error');
+        return;
+    }
+    
     waitlist.push(waitlistData);
     localStorage.setItem('plantiWaitlist', JSON.stringify(waitlist));
     
@@ -213,6 +215,10 @@ function handleWaitlistSubmission(e) {
     setTimeout(() => {
         closeWaitlistModal();
     }, 2000);
+    
+    // 콘솔에 수집된 이메일 출력 (개발용)
+    console.log('새로운 대기자 등록:', waitlistData);
+    console.log('전체 대기자 목록:', waitlist);
 }
 
 // 이메일 유효성 검사
